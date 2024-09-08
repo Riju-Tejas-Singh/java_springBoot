@@ -18,6 +18,7 @@ public class RestCallerServiceImpl implements RestCallerService {
     private final RestTemplate restTemplate;
     private final ConfigProperties configProperties;
     private static final String POST_CALl_API = "/server/receive";
+    private static final String GET_CALl_API = "/server/receive-get";
 
     @Override
     public <T> T call(RequestDto requestDto, Class<T> responseType) {
@@ -27,6 +28,23 @@ public class RestCallerServiceImpl implements RestCallerService {
             HttpHeaders headers = getHeaders();
             HttpEntity<RequestDto> requestEntity = new HttpEntity<>(requestDto, headers);
             ResponseEntity<T> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, responseType);
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                System.out.println("Non 200 response status code from rest call");
+            }
+            System.out.println(response);
+            return response.getBody();
+        } catch (Exception ex) {
+            System.out.println(RestConstants.REST_CALL_EXCEPTION + ex);
+        }
+        return null;
+    }
+
+    @Override
+    public RequestDto getCall (String message, String priority) {
+        try {
+            String url = configProperties.getHost() + RestConstants.COLON + configProperties.getPort()
+                    + GET_CALl_API + "/{message}/{priority}";
+            ResponseEntity<RequestDto> response = restTemplate.getForEntity(url, RequestDto.class, message, priority);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 System.out.println("Non 200 response status code from rest call");
             }

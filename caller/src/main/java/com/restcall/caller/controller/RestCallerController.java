@@ -5,10 +5,7 @@ import com.restcall.caller.service.RestCallerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/caller")
@@ -20,5 +17,10 @@ public class RestCallerController {
     @PostMapping(value = "/call")
     public ResponseEntity<?> doRestCall (@RequestBody RequestDto requestDto) {
         return new ResponseEntity<>(restCallerService.call(requestDto, String.class), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/get-call/{message}/{priority}")
+    public ResponseEntity<?> doGetRestCall(@PathVariable String message, @PathVariable String priority) {
+        return new ResponseEntity<>(restCallerService.getCall(message, priority), HttpStatus.OK);
     }
 }
